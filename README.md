@@ -56,7 +56,7 @@ This version has been modernized for Python 3 and adapted for Ingress Prime visu
     Run `sudo raspi-config`, navigate to **Interface Options** -> **SPI**, and enable it.
 
 4.  **Wiring**:
-    Connect your WS2801 strip to the Pi:
+    Connect your WS2801 strip to the Pi (See [WIRING.md](WIRING.md) for details):
     *   VCC -> 5V
     *   GND -> GND
     *   CLK -> Pin 23 (SCLK)
@@ -137,7 +137,7 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
     `sudo raspi-config` を実行し、 **Interface Options** -> **SPI** へ移動して有効化してください。
 
 4.  **配線**:
-    WS2801テープをPiに接続します:
+    WS2801テープをPiに接続します（詳細は [WIRING.md](WIRING.md) を参照）:
     *   VCC -> 5V
     *   GND -> GND
     *   CLK -> Pin 23 (SCLK)

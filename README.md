@@ -12,7 +12,7 @@ To ensure full compliance with the **Ingress Terms of Service (ToS)**, this soft
 *   **DOES NOT** scrape data from the Intel Map.
 *   **DOES NOT** automate any data collection from the game.
 
-The portal status is updated only when the user manually presses buttons on the web control panel based on their own observations. This makes it a safe and "ToS-friendly" way to enjoy physical LED effects for your desk or cosplay.
+The portal status is updated only when the user manually presses buttons on the web control panel based on their own observations.
 
 ## Attribution
 
@@ -93,7 +93,7 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
 *   Intel Mapからのデータスクレイピングを**行いません**。
 *   ゲームからのデータ自動収集を**行いません**。
 
-ポータルの状態は、ユーザー自身が観測に基づき、Webコントロールパネルのボタンを手動で押した時にのみ更新されます。これにより、デスクのインテリアやコスプレ用の物理的なLED演出を、規約を守りながら安全に楽しむことができます。
+ポータルの状態は、ユーザー自身が観測に基づき、Webコントロールパネルのボタンを手動で押した時にのみ更新されます。
 
 ## 謝辞
 

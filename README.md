@@ -68,6 +68,12 @@ This version has been modernized for Python 3 and adapted for Ingress Prime visu
     *   CLK -> Pin 23 (SCLK)
     *   DAT -> Pin 19 (MOSI)
 
+## Web Control Panel
+
+![Web UI Screenshot](docs/screenshot.png)
+
+*Actual UI appearance for managing resonators and faction status.*
+
 ## Usage
 
 1.  **Start the Web Controller**:
@@ -155,6 +161,12 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
     *   GND -> GND
     *   CLK -> Pin 23 (SCLK)
     *   DAT -> Pin 19 (MOSI)
+
+## Webコントロールパネル
+
+![Web UI Screenshot](docs/screenshot.png)
+
+*レゾネータと陣営の状態を管理する実際のUI画面。*
 
 ## 使い方
 

@@ -3,6 +3,17 @@
 A Raspberry Pi project to control LED strips for visualizing Ingress Prime portal status.
 This project allows you to manually control the LED status via a web interface, simulating a portal's state (Faction, Level, Health) for decorative or cosplay purposes.
 
+## Compliance & Safety
+
+**IMPORTANT: This tool is strictly for MANUAL simulation.**
+
+To ensure full compliance with the **Ingress Terms of Service (ToS)**, this software:
+*   **DOES NOT** interact with Niantic's servers or APIs.
+*   **DOES NOT** scrape data from the Intel Map.
+*   **DOES NOT** automate any data collection from the game.
+
+The portal status is updated only when the user manually presses buttons on the web control panel based on their own observations. This makes it a safe and "ToS-friendly" way to enjoy physical LED effects for your desk or cosplay.
+
 ## Attribution
 
 This project is a fork/derivative of the original [Tecthulhu](https://github.com/mtbrenner/tecthulhu) project by Martin Brenner, originally designed for the #MagnusReawakens anomaly in 2017.

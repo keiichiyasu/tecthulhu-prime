@@ -88,7 +88,7 @@ HTML_TEMPLATE = """
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { font-family: sans-serif; background-color: #121212; color: #e0e0e0; text-align: center; padding: 20px; }
-        h1 { color: #00d4ff; }
+        h1 { color: #bb00ff; text-shadow: 0 0 10px #bb00ff; }
         .section { margin-bottom: 30px; padding: 15px; border: 1px solid #333; border-radius: 10px; }
         .btn { display: inline-block; padding: 10px 15px; margin: 3px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; color: white; text-decoration: none; }
         .enl { background-color: #02BF02; }

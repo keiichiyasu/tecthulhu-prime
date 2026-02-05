@@ -25,6 +25,10 @@ This version has been modernized for Python 3 and adapted for Ingress Prime visu
 *   **Web Control Panel**: A simple web interface to manually set the portal's faction and status (to comply with Ingress Terms of Service by avoiding automated scraping).
 *   **WS2801 Support**: Designed for WS2801 addressable LED strips.
 
+## Unimplemented Features
+
+*   **Sound Effects**: Sound file playback functionality is not implemented.
+
 ## Installation
 
 ### Prerequisites
@@ -101,6 +105,10 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
 *   **Ingress Prime カラー**: Enlightened（緑）、Resistance（青）、およびレゾネーターレベル（L1-L8）のカラーパレットを更新しました。
 *   **Webコントロールパネル**: ポータルの陣営やステータスを手動で設定するためのシンプルなWebインターフェース（自動スクレイピングを回避し、Ingress利用規約を遵守するため）。
 *   **WS2801 対応**: WS2801 アドレス指定可能LEDテープに対応しています。
+
+## 未実装の機能
+
+*   **サウンドエフェクト**: 音声ファイルを再生する機能は実装されていません。
 
 ## インストール
 

@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template_string, request, redirect, url_for
-from ws2801 import ws2801
+try:
+    from ws2801 import ws2801
+except ImportError:
+    ws2801 = None
 import time
 import threading
+import math
 
 app = Flask(__name__)
 
 # Initialize LEDs
-# Note: RPi.GPIO needs root privileges usually.
+NUMBER_OF_PIXELS = 9
+ledpixels = [0] * NUMBER_OF_PIXELS
+LEDs = None
+
 try:
-    LEDs = ws2801()
-    NUMBER_OF_PIXELS = 16
-    ledpixels = [0] * NUMBER_OF_PIXELS
-    LEDs.cls(ledpixels)
+    if ws2801:
+        LEDs = ws2801()
+        LEDs.cls(ledpixels)
 except Exception as e:
     print(f"Error initializing LEDs (Simulating mode): {e}")
-    LEDs = None
-    ledpixels = [0] * 16
 
 # Ingress Prime Colors
 COLORS = {
@@ -26,7 +30,7 @@ COLORS = {
 }
 
 RESONATOR_COLORS = [
-    [0, 0, 0],       # L0
+    [0, 0, 0],       # L0 (OFF)
     [254, 206, 90],  # L1
     [255, 166, 48],  # L2
     [255, 115, 21],  # L3
@@ -39,30 +43,42 @@ RESONATOR_COLORS = [
 
 current_state = {
     'faction': 'Neutral',
-    'level': 1
+    'resonators': [1, 1, 1, 1, 1, 1, 1, 1]  # Levels for R1-R8
 }
 
-def update_leds():
-    if LEDs is None:
-        return
+def led_animation_loop():
+    global ledpixels
+    while True:
+        if LEDs is None:
+            time.sleep(1)
+            continue
 
-    # Set Faction LEDs (Assuming pixels 8-15 based on prototype.py)
-    faction_color = COLORS.get(current_state['faction'], [0,0,0])
-    c = LEDs.Color(faction_color[0], faction_color[1], faction_color[2])
-    
-    for i in range(8, 16):
-        LEDs.setpixelcolor_int(ledpixels, i, c)
+        # Firefly / Breathing effect using Sine wave
+        # Cycle every 4 seconds, brightness between 20% and 100%
+        brightness = (math.sin(time.time() * (2 * math.pi / 4)) + 1) / 2 * 0.8 + 0.2
 
-    # Set Resonator LEDs (Assuming pixels 0-7)
-    # For simplicity, setting all resonators to the current portal level color
-    res_level = current_state['level']
-    if 0 <= res_level < len(RESONATOR_COLORS):
-        rc = RESONATOR_COLORS[res_level]
-        res_c = LEDs.Color(rc[0], rc[1], rc[2])
-        for i in range(0, 8):
-            LEDs.setpixelcolor_int(ledpixels, i, res_c)
+        # 1. Set Center (Index 0)
+        f_color = COLORS.get(current_state['faction'], [0, 0, 0])
+        c = LEDs.Color(
+            int(f_color[0] * brightness),
+            int(f_color[1] * brightness),
+            int(f_color[2] * brightness)
+        )
+        LEDs.setpixelcolor_int(ledpixels, 0, c)
 
-    LEDs.writestrip(ledpixels)
+        # 2. Set Resonators (Index 1-8)
+        for i in range(8):
+            level = current_state['resonators'][i]
+            r_color = RESONATOR_COLORS[level]
+            rc = LEDs.Color(
+                int(r_color[0] * brightness),
+                int(r_color[1] * brightness),
+                int(r_color[2] * brightness)
+            )
+            LEDs.setpixelcolor_int(ledpixels, i + 1, rc)
+
+        LEDs.writestrip(ledpixels)
+        time.sleep(0.05) # ~20 FPS
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
@@ -73,65 +89,82 @@ HTML_TEMPLATE = """
     <style>
         body { font-family: sans-serif; background-color: #121212; color: #e0e0e0; text-align: center; padding: 20px; }
         h1 { color: #00d4ff; }
-        .btn { display: inline-block; padding: 15px 25px; margin: 5px; font-size: 16px; border: none; border-radius: 5px; cursor: pointer; color: white; text-decoration: none; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #333; border-radius: 10px; }
+        .btn { display: inline-block; padding: 10px 15px; margin: 3px; font-size: 14px; border: none; border-radius: 5px; cursor: pointer; color: white; text-decoration: none; }
         .enl { background-color: #02BF02; }
         .res { background-color: #0492D0; }
         .neu { background-color: #666; }
-        .level-btn { background-color: #333; width: 50px; }
-        .status { margin: 20px; padding: 10px; border: 1px solid #444; }
+        .res-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; max-width: 800px; margin: 0 auto; }
+        .res-box { background: #222; padding: 10px; border-radius: 8px; }
+        .lvl-btn { display: inline-block; width: 25px; height: 25px; line-height: 25px; margin: 2px; font-size: 10px; text-decoration: none; color: #fff; border-radius: 3px; background: #444; }
+        .active { outline: 2px solid #fff; font-weight: bold; }
     </style>
 </head>
 <body>
     <h1>Tecthulhu Prime</h1>
     
-    <div class="status">
-        Current: <span style="color: {{ faction_color }}">{{ state.faction }}</span> | L{{ state.level }}
+    <div class="section">
+        <h3>Faction</h3>
+        <a href="/set_faction/Enlightened" class="btn enl {% if state.faction == 'Enlightened' %}active{% endif %}">Enlightened</a>
+        <a href="/set_faction/Resistance" class="btn res {% if state.faction == 'Resistance' %}active{% endif %}">Resistance</a>
+        <a href="/set_faction/Neutral" class="btn neu {% if state.faction == 'Neutral' %}active{% endif %}">Neutral</a>
     </div>
 
-    <h3>Faction</h3>
-    <a href="/set_faction/Enlightened" class="btn enl">Enlightened</a>
-    <a href="/set_faction/Resistance" class="btn res">Resistance</a>
-    <a href="/set_faction/Neutral" class="btn neu">Neutral</a>
-
-    <h3>Portal Level</h3>
-    {% for i in range(1, 9) %}
-        <a href="/set_level/{{ i }}" class="btn level-btn" style="border: 2px solid rgb({{ res_colors[i][0] }},{{ res_colors[i][1] }},{{ res_colors[i][2] }})">L{{ i }}</a>
-    {% endfor %}
+    <h3>Resonators (R1 - R8)</h3>
+    <div class="res-grid">
+        {% for i in range(8) %}
+        <div class="res-box">
+            <strong>R{{ i + 1 }}</strong><br>
+            {% for lvl in range(9) %}
+                <a href="/set_res/{{ i }}/{{ lvl }}" 
+                   class="lvl-btn {% if state.resonators[i] == lvl %}active{% endif %}" 
+                   style="border-bottom: 3px solid rgb({{ res_colors[lvl][0] }},{{ res_colors[lvl][1] }},{{ res_colors[lvl][2] }})">
+                   {{ lvl if lvl > 0 else 'X' }}
+                </a>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
 
     <br><br>
-    <a href="/off" class="btn" style="background-color: #000; border: 1px solid #555;">Turn Off</a>
+    <div class="section">
+        <a href="/all_max" class="btn" style="background: #555;">All L8</a>
+        <a href="/all_off" class="btn" style="background: #000; border: 1px solid #555;">All OFF</a>
+    </div>
 </body>
 </html>
 """
 
 @app.route('/')
 def index():
-    f_color = "#666"
-    if current_state['faction'] == 'Enlightened': f_color = "#02BF02"
-    elif current_state['faction'] == 'Resistance': f_color = "#0492D0"
-    
-    return render_template_string(HTML_TEMPLATE, state=current_state, faction_color=f_color, res_colors=RESONATOR_COLORS)
+    return render_template_string(HTML_TEMPLATE, state=current_state, res_colors=RESONATOR_COLORS)
 
 @app.route('/set_faction/<faction>')
 def set_faction(faction):
     if faction in COLORS:
         current_state['faction'] = faction
-        update_leds()
     return redirect(url_for('index'))
 
-@app.route('/set_level/<int:level>')
-def set_level(level):
-    if 1 <= level <= 8:
-        current_state['level'] = level
-        update_leds()
+@app.route('/set_res/<int:index>/<int:level>')
+def set_res(index, level):
+    if 0 <= index < 8 and 0 <= level <= 8:
+        current_state['resonators'][index] = level
     return redirect(url_for('index'))
 
-@app.route('/off')
-def turn_off():
-    if LEDs:
-        LEDs.cls(ledpixels)
+@app.route('/all_max')
+def all_max():
+    current_state['resonators'] = [8] * 8
+    return redirect(url_for('index'))
+
+@app.route('/all_off')
+def all_off():
+    current_state['resonators'] = [0] * 8
+    current_state['faction'] = 'Neutral'
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    update_leds() # Set initial state
+    # Start animation thread
+    threading.Thread(target=led_animation_loop, daemon=True).start()
+    
+    # Run Flask
     app.run(host='0.0.0.0', port=5000)

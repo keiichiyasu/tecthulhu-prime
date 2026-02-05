@@ -45,17 +45,23 @@ This version has been modernized for Python 3 and adapted for Ingress Prime visu
     cd tecthulhu-prime
     ```
 
-2.  **Install Dependencies**:
+2.  **Install System Dependencies**:
     ```bash
     sudo apt-get update
-    sudo apt-get install python3-pip python3-dev build-essential
-    sudo pip3 install RPi.GPIO requests pygame flask
+    sudo apt-get install python3-pip python3-dev python3-venv build-essential
     ```
 
-3.  **Enable SPI**:
+3.  **Create Virtual Environment and Install Python Dependencies**:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install RPi.GPIO requests pygame flask
+    ```
+
+4.  **Enable SPI**:
     Run `sudo raspi-config`, navigate to **Interface Options** -> **SPI**, and enable it.
 
-4.  **Wiring**:
+5.  **Wiring**:
     Connect your WS2801 strip to the Pi (See [WIRING.md](WIRING.md) for details):
     *   VCC -> 5V
     *   GND -> GND
@@ -65,8 +71,9 @@ This version has been modernized for Python 3 and adapted for Ingress Prime visu
 ## Usage
 
 1.  **Start the Web Controller**:
+    Since GPIO access typically requires root privileges, use `sudo` with the virtual environment's python:
     ```bash
-    sudo python3 server.py
+    sudo ./venv/bin/python server.py
     ```
 
 2.  **Control**:
@@ -126,17 +133,23 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
     cd tecthulhu-prime
     ```
 
-2.  **依存ライブラリのインストール**:
+2.  **システム依存ライブラリのインストール**:
     ```bash
     sudo apt-get update
-    sudo apt-get install python3-pip python3-dev build-essential
-    sudo pip3 install RPi.GPIO requests pygame flask
+    sudo apt-get install python3-pip python3-dev python3-venv build-essential
     ```
 
-3.  **SPIの有効化**:
+3.  **仮想環境の作成とライブラリのインストール**:
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install RPi.GPIO requests pygame flask
+    ```
+
+4.  **SPIの有効化**:
     `sudo raspi-config` を実行し、 **Interface Options** -> **SPI** へ移動して有効化してください。
 
-4.  **配線**:
+5.  **配線**:
     WS2801テープをPiに接続します（詳細は [WIRING.md](WIRING.md) を参照）:
     *   VCC -> 5V
     *   GND -> GND
@@ -146,8 +159,9 @@ Webインターフェースを通じて手動でLEDの状態を制御し、ポ�
 ## 使い方
 
 1.  **Webコントローラーの起動**:
+    GPIOへのアクセスには通常ルート権限が必要なため、仮想環境内の python を `sudo` で実行します：
     ```bash
-    sudo python3 server.py
+    sudo ./venv/bin/python server.py
     ```
 
 2.  **操作**:
